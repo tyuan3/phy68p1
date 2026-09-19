@@ -1,8 +1,8 @@
 import math
 
-import 
+# import 
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-numerical = Ball(1, 0)
+# numerical = Ball(1, 0)

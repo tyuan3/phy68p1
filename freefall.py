@@ -18,7 +18,7 @@ class Ball:
         self.area = A
         pass
 
-    def getNext(self, dragType=0):
+    def getNext(self, dragType=0, method='euler_improved'):
         self.time += self.deltat
         
         # Calc new velocity
@@ -28,20 +28,29 @@ class Ball:
         elif (dragType == 2):
             dragforce = rho/2 * self.vel * self.vel * self.area * self.drag_coeff
 
-        dvel = (-g + dragforce/self.mass) * self.deltat
-        avvel = self.vel + dvel/2
-        self.vel += dvel
+        # Standard Euler method using left-endpoint approximation
+        if method == 'euler':
+            dvel = (-g + dragforce/self.mass) * self.deltat
+            self.pos += self.vel * self.deltat # Compute next position w/ left endpoint
+            self.vel += dvel
+            
+        # Improved Euler method using average velocity of left and right endpoints
+        elif method == 'euler_improved':
+            dvel = (-g + dragforce/self.mass) * self.deltat
+            avvel = self.vel + dvel/2
+            self.vel += dvel
 
-        # Calculate position with average position during frame
-        self.pos += avvel * self.deltat
+            # Calculate position with average position during frame
+            self.pos += avvel * self.deltat
+
         return (self.pos, self.vel, self.time)
 
-    def predict(self, time, dragType=0):
+    def predict(self, time, dragType=0, method='euler_improved'):
         # Get number of frames to simulate
         n = math.ceil(time / self.deltat)
         frames = []
         for _ in range(n):
-            frames += [self.getNext(dragType)]
+            frames += [self.getNext(dragType, method)]
 
         return frames
 
@@ -59,9 +68,11 @@ def plotdata(filename):
 
 def main():
     foam = Ball(m=0.00485, A=0.00477663773)
-    out = foam.predict(.482, 2)
+    out = foam.predict(.482, 2, method='euler_improved')
 
     plt.plot(np.array([el[2] for el in out]), np.array([el[0] for el in out]))
+
+
     # plotdata('data/foam/Foam_1.txt')
     # plotdata('data/foam/Foam_2.txt')
     # plotdata('data/foam/Foam_3.txt')
