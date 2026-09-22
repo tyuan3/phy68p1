@@ -62,25 +62,31 @@ def plotdata(filename):
     y = data[:, 1]
     y -= y[0] + 0.002 # y offset
 
-    plt.plot(t, y, 'o-')
+    plt.plot(t, y, 'o-', label="Experimental data")
 
 
+
+import analytical
 
 def main():
+
+    # Compute solution and plot
     foam = Ball(m=0.00485, A=0.00477663773)
     out = foam.predict(.482, 2, method='euler_improved')
 
-    plt.plot(np.array([el[2] for el in out]), np.array([el[0] for el in out]))
+    plt.plot(np.array([el[2] for el in out]), np.array([el[0] for el in out]), label="Euler (improved)")
 
+    # Plot analytical solution
+    plt.plot(analytical.t_vals, analytical.linear, label="Linear drag")
+    plt.plot(analytical.t_vals, analytical.quadratic, label="Quadratic drag")
 
-    # plotdata('data/foam/Foam_1.txt')
-    # plotdata('data/foam/Foam_2.txt')
-    # plotdata('data/foam/Foam_3.txt')
     plotdata('data/foam/Foam_4.txt')
     # plotdata('data/foam/Foam_5.txt')
+
     plt.xlabel("Time (s)")
     plt.ylabel("Position (m)")
     plt.grid(True)
+    plt.legend()
     plt.show()
 
 if (__name__ == "__main__"):
