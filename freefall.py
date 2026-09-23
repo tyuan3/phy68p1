@@ -43,6 +43,9 @@ class Ball:
             # Calculate position with average position during frame
             self.pos += avvel * self.deltat
 
+        elif method == 'RK4':
+            ...
+
         return (self.pos, self.vel, self.time)
 
     def predict(self, time, dragType=0, method='euler_improved'):
@@ -58,13 +61,13 @@ def plotdata(filename, n):
     y_all = []
     t_ref = None
 
-    for i in range(1, n + 1):  # inclusive of n
+    for i in range(1, n + 1): 
         data = np.loadtxt(f'{filename}_{i}.txt', skiprows=1)
 
         t = data[:, 0]
         t -= t[0] - 0.03  # t offset
         y = data[:, 1]
-        y = (y - y[0] - 0.002)  # y offset and flip sign
+        y = -(y - y[0] - 0.002)  # y offset and flip sign
         if t_ref is None:
             t_ref = t  # use first trial's time array as the reference grid
 
@@ -80,11 +83,20 @@ def plotdata(filename, n):
 import analytical
 
 def main():
-    foam = Ball(m=0.00485, A=0.00477663773)
+    balls = [Ball(m=0.00485, A=0.00477663773),
+             Ball(m=0.075, A=0.002299788928),
+             Ball(m=0.0372, A=0.04171260073)]
+    
+    foam = balls[0]
+    rubber = balls[1]
+    beach = balls[2]
 
     # Compute quadratic solution and plot
-    out = foam.predict(.482, 2, method='euler_improved')
+    out = beach.predict(.482, 2, method='euler_improved')
     plt.plot(np.array([el[2] for el in out]), np.array([el[0] for el in out]), label="Euler (improved), quadratic Drag")
+
+    out2 = beach.predict(.482, 2, method='euler')
+    plt.plot(np.array([el[2] for el in out2]), np.array([el[0] for el in out2]), label="Euler, quadratic Drag")
 
     # Compute linear solution and plot
     # out2 = foam.predict(.482, 1, method='euler_improved')
@@ -94,7 +106,7 @@ def main():
     # plt.plot(analytical.t_vals, analytical.linear, label="Linear drag")
     # plt.plot(analytical.t_vals, analytical.quadratic, label="Quadratic drag")
     
-    balltype = 'foam' # enter type of ball in all lowercase
+    balltype = 'beach' # enter type of ball in all lowercase
     plotdata(f'data/{balltype}/{balltype.capitalize()}', 5)
 
     plt.title(f'{balltype.capitalize()} Freefall with Drag')
@@ -102,7 +114,7 @@ def main():
     plt.ylabel("Position (m)")
     plt.grid(True)
     plt.legend()
-    plt.savefig(f'Figures/{balltype}')
+    plt.savefig(f'Figures/{balltype}_2')
     plt.show()
 
 if (__name__ == "__main__"):
