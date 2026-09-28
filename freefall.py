@@ -309,7 +309,7 @@ def main():
              Ball(m=0.075, A=0.002299788928),
              Ball(m=0.0372, A=0.04171260073)]
 
-    ball = balls[1]  # Manual hardcoded ball selection
+    ball = balls[1]  # Manual hardcoded ball selection (change for different balls)
 
     balltype = 'rubber'  # Remember to hard code this for plot labels to be correct balls[0] is 'foam', balls[1] is 'rubber', balls[2] is 'beach'
     t_data, y_data = load_average_data(f'data/{balltype}/{balltype.capitalize()}', 5)
